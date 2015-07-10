@@ -14,9 +14,6 @@ else ifeq ($(OS), Darwin)
 else
 endif
 
-cli: cli.cpp
-	$(CC) $(DEFINE) -o $@ $^ $(LINKER)
-
 click: click.cpp RtAudio.o
 	$(CC) $(DEFINE) -o $@ $^ $(LINKER)
 
@@ -24,6 +21,9 @@ probe: probe.cpp RtAudio.o
 	$(CC) $(DEFINE) -o $@ $^ $(LINKER)
 
 search: search.cpp RtAudio.o
+	$(CC) $(DEFINE) -o $@ $^ $(LINKER)
+
+cli: cli.cpp
 	$(CC) $(DEFINE) -o $@ $^ $(LINKER)
 
 RtAudio.o: RtAudio.cpp

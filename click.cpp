@@ -47,16 +47,23 @@ int main() {
     exit(0);
   }
   RtAudio::StreamParameters parameters;
-  parameters.deviceId = dac.getDefaultOutputDevice();
+  parameters.deviceId = 1;
+  //parameters.deviceId = dac.getDefaultOutputDevice();
   parameters.nChannels = 2;
   parameters.firstChannel = 0;
+  RtAudio::StreamOptions options;
+  options.flags = RTAUDIO_MINIMIZE_LATENCY | RTAUDIO_HOG_DEVICE | RTAUDIO_SCHEDULE_REALTIME;
+
+
   unsigned int sampleRate = 44100;
   unsigned int bufferFrames = 512;  // 0 means: ask for the smallest
   double data[2];
 
   try {
-    dac.openStream(&parameters, NULL, RTAUDIO_SINT16, sampleRate, &bufferFrames,
-                   &processAudio, (void *)&data);
+    unsigned got = bufferFrames;
+    dac.openStream(&parameters, NULL, RTAUDIO_SINT16, sampleRate, &got, &processAudio, (void *)&data, &options);
+    cout << "asked for " << bufferFrames << " and got " << got << endl;
+
     dac.startStream();
   } catch (RtAudioError &e) {
     e.printMessage();

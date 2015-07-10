@@ -22,42 +22,43 @@ int main() {
   unsigned int deviceCount = audio.getDeviceCount();
   printf("found %u devices\n", deviceCount);
 
-  printf("name                     out in duplex default\n");
+  printf("dev out in dup def info/name\n");
   printf("----------------------------------------------\n");
-  for (unsigned int i = 0; i < deviceCount; i++) {
-    RtAudio::DeviceInfo info = audio.getDeviceInfo(i);
+  for (unsigned deviceNumber = 0; deviceNumber < deviceCount; deviceNumber++) {
+    RtAudio::DeviceInfo info = audio.getDeviceInfo(deviceNumber);
 
     assert(info.probed);
 
-    printf("%24s  %2u %2u     %2u %c\n",
-      info.name.c_str(),
+    printf("%3u %3u %2u %3u  %c%c %s \n",
+      deviceNumber,
       info.outputChannels,
       info.inputChannels,
       info.duplexChannels,
       (info.isDefaultOutput) ? 'o' : ' ',
-      (info.isDefaultInput) ? 'i' : ' '
+      (info.isDefaultInput) ? 'i' : ' ',
+      info.name.c_str()
     );
   }
 
-  printf("-(sample rates)-------------------------------\n");
-  for (unsigned int i = 0; i < deviceCount; i++) {
-    RtAudio::DeviceInfo info = audio.getDeviceInfo(i);
+  printf("---(sample rates)-----------------------------\n");
+  for (unsigned int deviceNumber = 0; deviceNumber < deviceCount; deviceNumber++) {
+    RtAudio::DeviceInfo info = audio.getDeviceInfo(deviceNumber);
 
     assert(info.probed);
 
-    printf("%s ", info.name.c_str());
+    printf("%3u ", deviceNumber);
     for (int k = 0; k < info.sampleRates.size(); ++k)
       printf("%u ", info.sampleRates[k]);
     printf("\n");
   }
 
-  printf("-(native formats)-----------------------------\n");
-  for (unsigned int i = 0; i < deviceCount; i++) {
-    RtAudio::DeviceInfo info = audio.getDeviceInfo(i);
+  printf("---(native formats)---------------------------\n");
+  for (unsigned int deviceNumber = 0; deviceNumber < deviceCount; deviceNumber++) {
+    RtAudio::DeviceInfo info = audio.getDeviceInfo(deviceNumber);
 
     assert(info.probed);
 
-    printf("%s ", info.name.c_str());
+    printf("%3u ", deviceNumber);
     if (RTAUDIO_SINT8 & info.nativeFormats) {
       printf("SINT8 ");
     } else if (RTAUDIO_SINT16 & info.nativeFormats) {
