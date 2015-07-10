@@ -1,28 +1,45 @@
-#define RTAUDIO_DEBUG
+/*
+  Title:   Click: a latency testing program
+  Author:  Hunter Gordon and Karl Yerkes
+  Date:    2015-07-10
+  Details:
+    Upon receipt of an input trigger event (i.e. keypress, network message,
+  digital pin) this program responds by playing a sound (i.e. click, ding, etc)
+  on the given sound device, flashing white on the given graphics device, and
+  raising the given output pin momentarily. The purpose of this program is to
+  facilitate data gathering for testing the latency, jitter and synchrony of
+  distributed interactive audiovisual systems.
 
+  TODO: encapsulate the the audio stuff into an "easy" class
+  TODO: figure out a way to wait for any key press (not just enter)
+  TODO: integrate probe program so we know more about the sound devices
+  TODO: integrate WiringPi as impulse trigger
+  TODO: integrate WiringPi as output response
+  TODO: integrate Cuttlebone as impulse trigger
+  TODO: integrate command line interface arguments
+  TODO: integrate OpenGL/BCM graphics flasher
+*/
+
+#define RTAUDIO_DEBUG
 #include "RtAudio.h"
 #include <iostream>
 #include <cstdlib>
-
 using namespace std;
+
 bool shouldClick = false;
 
-int processAudio(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
-        double streamTime, RtAudioStreamStatus status, void *userData) {
-
-
-  float* ob = (float*)outputBuffer;
-
-  ob[0] = ((shouldClick == true)? 1 : 0 );
+int processAudio(void *outputBuffer, void *inputBuffer,
+                 unsigned int nBufferFrames, double streamTime,
+                 RtAudioStreamStatus status, void *userData) {
+  bool localShouldClick = shouldClick;
   shouldClick = false;
-  for (unsigned i = 1; i < nBufferFrames; i++)
-    ob[i] = 0;
-
+  short *ob = (short *)outputBuffer;
+  memset(ob, 0, sizeof(short) * nBufferFrames * 2);
+  if (localShouldClick) ob[0] = ob[1] = 32767;
   return 0;
 }
 
 int main() {
-  unsigned clicks = 0;
   RtAudio dac;
   if (dac.getDeviceCount() < 1) {
     std::cout << "\nNo audio devices found!\n";
@@ -30,29 +47,29 @@ int main() {
   }
   RtAudio::StreamParameters parameters;
   parameters.deviceId = dac.getDefaultOutputDevice();
-  parameters.nChannels = 1;
+  parameters.nChannels = 2;
   parameters.firstChannel = 0;
   unsigned int sampleRate = 44100;
-  unsigned int bufferFrames = 512;
+  unsigned int bufferFrames = 512;  // 0 means: ask for the smallest
   double data[2];
 
   try {
-    dac.openStream(&parameters, NULL, RTAUDIO_FLOAT32, sampleRate,
-                   &bufferFrames, &processAudio, (void *)&data);
+    dac.openStream(&parameters, NULL, RTAUDIO_SINT16, sampleRate, &bufferFrames,
+                   &processAudio, (void *)&data);
     dac.startStream();
   } catch (RtAudioError &e) {
     e.printMessage();
     exit(0);
-}
+  }
 
+  unsigned clickCount = 0;
   char c;
   do {
     c = getchar();
-    clicks++;
-	cout<<clicks<<" returns pressed"<<endl;
-    shouldClick=true;
-  }while(c==10) ; //return char is given
-
+    shouldClick = true;
+    clickCount++;
+    cout << clickCount << " impulses played";
+  } while (c == 10);  // return char is given
 
   try {
     dac.stopStream();
