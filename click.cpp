@@ -24,6 +24,7 @@
 #include "RtAudio.h"
 #include <iostream>
 #include <cstdlib>
+#include <cstring> // memset
 using namespace std;
 
 bool shouldClick = false;
