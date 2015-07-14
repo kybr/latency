@@ -27,7 +27,7 @@
 #include <cstring> // memset
 using namespace std;
 
-bool shouldClick = false;
+bool shouldClick = false, shouldBuzz = false;
 
 int processAudio(void *outputBuffer, void *inputBuffer,
                  unsigned int nBufferFrames, double streamTime,
@@ -36,24 +36,38 @@ int processAudio(void *outputBuffer, void *inputBuffer,
   shouldClick = false;
   short *ob = (short *)outputBuffer;
   memset(ob, 0, sizeof(short) * nBufferFrames * 2);
-  if (localShouldClick) ob[0] = ob[1] = 32767;
+  if (localShouldClick || shouldBuzz) ob[0] = ob[1] = 32767;
   return 0;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
   RtAudio dac;
   if (dac.getDeviceCount() < 1) {
     std::cout << "\nNo audio devices found!\n";
     exit(0);
   }
+
+  if (argc == 1) {
+    cout << "using NATIVE audio output (3.5mm headphone jack)" << endl;
+    system("amixer cset numid=3 1");
+  }
+  else {
+    cout << "using HDMI audio output (LCD speakers / headphone jack)" << endl;
+    // system("amixer cset numid=3 0"); // auto
+    system("amixer cset numid=3 2"); // hdmi
+  }
+
   RtAudio::StreamParameters parameters;
-  parameters.deviceId = 1;
-  //parameters.deviceId = dac.getDefaultOutputDevice();
+  parameters.deviceId = dac.getDefaultOutputDevice();
   parameters.nChannels = 2;
   parameters.firstChannel = 0;
   RtAudio::StreamOptions options;
-  options.flags = RTAUDIO_MINIMIZE_LATENCY | RTAUDIO_HOG_DEVICE | RTAUDIO_SCHEDULE_REALTIME;
 
+  // these seem to work?
+  options.flags = RTAUDIO_HOG_DEVICE | RTAUDIO_SCHEDULE_REALTIME;
+
+  // RTAUDIO_MINIMIZE_LATENCY seems to glitch the system
+  //options.flags = RTAUDIO_MINIMIZE_LATENCY | RTAUDIO_HOG_DEVICE | RTAUDIO_SCHEDULE_REALTIME;
 
   unsigned int sampleRate = 44100;
   unsigned int bufferFrames = 512;  // 0 means: ask for the smallest
@@ -65,7 +79,7 @@ int main() {
     cout << "asked for " << bufferFrames << " and got " << got << endl;
 
     dac.startStream();
-  } catch (RtAudioError &e) {
+  } catch (RtError &e) {
     e.printMessage();
     exit(0);
   }
@@ -81,7 +95,7 @@ int main() {
 
   try {
     dac.stopStream();
-  } catch (RtAudioError &e) {
+  } catch (RtError &e) {
     e.printMessage();
   }
   if (dac.isStreamOpen()) dac.closeStream();

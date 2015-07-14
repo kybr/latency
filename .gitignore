@@ -2,6 +2,7 @@ cli
 probe
 search
 click
+playsaw
 
 # Compiled Object files
 *.slo

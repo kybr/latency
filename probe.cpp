@@ -23,7 +23,7 @@ int main() {
   printf("found %u devices\n", deviceCount);
 
   printf("dev out in dup def info/name\n");
-  printf("----------------------------------------------\n");
+  //printf("----------------------------------------------\n");
   for (unsigned deviceNumber = 0; deviceNumber < deviceCount; deviceNumber++) {
     RtAudio::DeviceInfo info = audio.getDeviceInfo(deviceNumber);
 
