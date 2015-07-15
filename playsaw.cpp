@@ -8,7 +8,8 @@ unsigned int channels = 2;
 
 int saw(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
         double streamTime, RtAudioStreamStatus status, void *data) {
-  bool shouldClickLocal = shouldClick;
+  //bool shouldClickLocal = shouldClick;
+  bool shouldClickLocal = true;
   shouldClick = false;
 
   extern unsigned int channels;  // XXX important, i guess
@@ -29,6 +30,10 @@ int saw(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
 int main(int argc, char *argv[]) {
   unsigned int bufferFrames = 512, fs = 44100, device = 0;
 
+  cout << "using HDMI audio output (LCD speakers / headphone jack)" << endl;
+  system("amixer cset numid=3 2"); // use hdmi audio output
+  system("amixer -c 0 -- sset PCM 0dB"); // set gain to nominal
+
   RtAudio dac;
   if (dac.getDeviceCount() < 1) {
     cout << "\nNo audio devices found!\n";
@@ -43,8 +48,8 @@ int main(int argc, char *argv[]) {
   oParams.firstChannel = 0;
 
   RtAudio::StreamOptions options;
-  // options.flags |= RTAUDIO_HOG_DEVICE;
-  // options.flags |= RTAUDIO_SCHEDULE_REALTIME;
+  options.flags |= RTAUDIO_HOG_DEVICE;
+  options.flags |= RTAUDIO_SCHEDULE_REALTIME;
 
   try {
     dac.openStream(&oParams, NULL, RTAUDIO_SINT16, fs, &bufferFrames, &saw,
