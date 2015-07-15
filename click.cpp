@@ -48,13 +48,13 @@ int main(int argc, char* argv[]) {
   }
 
   if (argc == 1) {
-    cout << "using NATIVE audio output (3.5mm headphone jack)" << endl;
-    system("amixer cset numid=3 1");
-  }
-  else {
     cout << "using HDMI audio output (LCD speakers / headphone jack)" << endl;
     // system("amixer cset numid=3 0"); // auto
     system("amixer cset numid=3 2"); // hdmi
+  }
+  else {
+    cout << "using NATIVE audio output (3.5mm headphone jack)" << endl;
+    system("amixer cset numid=3 1");
   }
 
   RtAudio::StreamParameters parameters;

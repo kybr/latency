@@ -33,4 +33,4 @@ playsaw: playsaw.cpp
 #	$(CC) $(DEFINE) -o $@ -c $< $(LINKER)
 
 clean:
-	rm -rf probe search click cli *.o
+	rm -rf probe search click playsaw cli *.o
