@@ -33,7 +33,7 @@ void split(const string& possibleOption, string& key, string& value) {
 struct Options {
   // class members with defaults (set defaults here)
   //
-  unsigned blockSize = 512, sampleRate = 44100;
+  unsigned device = 0, blockSize = 512, sampleRate = 44100;
   enum { KEY, PIN, PORT } impulseMethod = KEY;
   enum { NORMAL, HIGH, REALTIME } priority = NORMAL;
   enum { CLICK, DING, BEATLES } responseSound = CLICK;
@@ -45,6 +45,8 @@ struct Options {
   void print() {
     static Options defaults;
 
+    printf("%c device:%u\n", device == defaults.device ? ' ' : '!',
+           device);
     printf("%c blockSize:%u\n", blockSize == defaults.blockSize ? ' ' : '!',
            blockSize);
     printf("%c sampleRate:%u\n", sampleRate == defaults.sampleRate ? ' ' : '!',
@@ -102,6 +104,8 @@ struct Options {
         responseSound = BEATLES;
       else
         assert(false);
+    else if (key == "device" || key == "dv")
+      device = atoi(value.c_str());
     else if (key == "blockSize" || key == "bs")
       blockSize = atoi(value.c_str());
     else if (key == "sampleRate" || key == "sr")
