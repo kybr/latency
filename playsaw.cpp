@@ -27,7 +27,7 @@ int saw(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
 }
 
 int main(int argc, char *argv[]) {
-  unsigned int bufferFrames = 512, fs = 44100, device = 1;
+  unsigned int bufferFrames = 512, fs = 44100, device = 0;
 
   RtAudio dac;
   if (dac.getDeviceCount() < 1) {
