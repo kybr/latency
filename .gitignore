@@ -3,6 +3,10 @@ probe
 search
 click
 playsaw
+data
+network_impulse
+network_response
+
 
 # Compiled Object files
 *.slo

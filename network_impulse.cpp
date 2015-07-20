@@ -1,6 +1,7 @@
 #define RTAUDIO_DEBUG
 
 #include "Cuttlebone/Cuttlebone.hpp"
+#include "network_state.hpp"
 #include "RtAudio.h"
 #include <iostream>
 #include <cstdlib>
@@ -9,10 +10,6 @@
 using namespace std;
 
 unsigned n = 0;
-
-struct State {
-  unsigned n;
-} state = {0};
 
 cuttlebone::Maker<State> maker("192.168.7.255");
 
@@ -47,6 +44,7 @@ int main() {
   maker.start();
 
   RtAudio dac;
+  cout << "rtaudio: " << dac.getVersion() << endl;
   if (dac.getDeviceCount() < 1) {
     std::cout << "\nNo audio devices found!\n";
     exit(0);

@@ -18,7 +18,10 @@ else ifeq ($(OS), Darwin)
 else
 endif
 
-test_network: test_network.cpp
+network_impulse: network_impulse.cpp
+	$(CC) $(DEFINE) $(INCLUDE) -o $@ $^ $(LINKER)
+
+network_response: network_response.cpp
 	$(CC) $(DEFINE) $(INCLUDE) -o $@ $^ $(LINKER)
 
 #click: click.cpp RtAudio.o
