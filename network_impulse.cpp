@@ -22,7 +22,7 @@ int processAudio(void *outputBuffer, void *inputBuffer,
   if (n == 0) {
     state.n++;
     maker.set(state);
-    printf("sent %u\n", state.n);
+    LOG("sent %u", state.n);
   }
 
   // pulse pin
@@ -33,7 +33,7 @@ int processAudio(void *outputBuffer, void *inputBuffer,
     digitalWrite(0, LOW);
 
   n++;
-  if (n == 100)
+  if (n == 52)
     n = 0;
   return 0;
 }
@@ -54,13 +54,19 @@ int main() {
   parameters.nChannels = 1;
   parameters.firstChannel = 0;
   unsigned int sampleRate = 44100;
-  unsigned int bufferFrames = 256;
+  unsigned int bufferFrames = 512;
   double data[2];
 
   try {
-    dac.openStream(&parameters, NULL, RTAUDIO_SINT16, sampleRate, &bufferFrames,
+    unsigned got = bufferFrames;
+    dac.openStream(&parameters, NULL, RTAUDIO_SINT16, sampleRate, &got,
                    &processAudio, (void *)&data);
     dac.startStream();
+
+    if (got != bufferFrames) {
+      printf("did not get %u audio buffer size. got %u\n", bufferFrames, got);
+      exit(1);
+    }
 
   } catch (RtAudioError &e) {
     e.printMessage();

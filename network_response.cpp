@@ -17,12 +17,18 @@ int processAudio(void *outputBuffer, void *inputBuffer,
                  unsigned int nBufferFrames, double streamTime,
                  RtAudioStreamStatus status, void *userData) {
 
+  short* buffer = static_cast<short*>(outputBuffer);
+  memset(buffer, 0, sizeof(short) * nBufferFrames);
+
   if (taker.get(state)) {
     digitalWrite(0, HIGH);
     printf("got here\n");
+    buffer[0] = 32767;
   }
-  else
+  else {
     digitalWrite(0, LOW);
+    buffer[0] = 0;
+  }
 
   return 0;
 }
