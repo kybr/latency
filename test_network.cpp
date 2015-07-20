@@ -7,21 +7,26 @@
 #include <wiringPi.h>
 
 using namespace std;
-bool shouldClick = false;
-
-unsigned clicks = 0;
-void callback(void) {
-  shouldClick = true;
-  printf("%u clicks\n", clicks++);
-  fflush(stdout);
-}
 
 unsigned n = 0;
+
+struct State {
+  unsigned n;
+} state = {0};
+
+cuttlebone::Maker<State> maker("192.168.7.255");
 
 int processAudio(void *outputBuffer, void *inputBuffer,
                  unsigned int nBufferFrames, double streamTime,
                  RtAudioStreamStatus status, void *userData) {
+
   // send network packet
+  //
+  if (n == 0) {
+    state.n++;
+    maker.set(state);
+    printf("sent %u\n", state.n);
+  }
 
   // pulse pin
   //
@@ -38,6 +43,8 @@ int processAudio(void *outputBuffer, void *inputBuffer,
 
 int main() {
   wiringPiSetup();
+
+  maker.start();
 
   RtAudio dac;
   if (dac.getDeviceCount() < 1) {
@@ -57,16 +64,17 @@ int main() {
                    &processAudio, (void *)&data);
     dac.startStream();
 
-  } catch (RtError &e) {
+  } catch (RtAudioError &e) {
     e.printMessage();
     exit(0);
   }
 
   getchar();
+  maker.stop();
 
   try {
     dac.stopStream();
-  } catch (RtError &e) {
+  } catch (RtAudioError &e) {
     e.printMessage();
   }
   if (dac.isStreamOpen()) dac.closeStream();

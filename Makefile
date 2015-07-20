@@ -4,8 +4,8 @@ ifeq ($(OS), Linux)
   LINKER += -lrtaudio
   LINKER += -lasound
   LINKER += -lwiringPi
-  LINKER += -lcuttlebone
-  LINKER += -L./cuttlebone/build/
+#  LINKER += -lcuttlebone
+#  LINKER += -L./cuttlebone/build/
   INCLUDE += -I./cuttlebone/
 else ifeq ($(OS), Darwin)
   CC = g++ -std=c++11 -Wno-deprecated-register -Wno-format-extra-args

@@ -1,3 +1,3 @@
 [submodule "cuttlebone"]
 	path = cuttlebone
-	url = git@github.com:rbtsx/cuttlebone.git
+	url = http://github.com/rbtsx/cuttlebone.git
