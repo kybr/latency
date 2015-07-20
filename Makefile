@@ -4,14 +4,22 @@ ifeq ($(OS), Linux)
   LINKER += -lrtaudio
   LINKER += -lasound
   LINKER += -lwiringPi
+  LINKER += -lcuttlebone
+  LINKER += -L./cuttlebone/build/
+  INCLUDE += -I./cuttlebone/
 else ifeq ($(OS), Darwin)
   CC = g++ -std=c++11 -Wno-deprecated-register -Wno-format-extra-args
   DEFINE += -D__MACOSX_CORE__
   LINKER += -framework CoreAudio
   LINKER += -framework CoreFoundation
   LINKER += -lpthread
+  LINKER += -L./cuttlebone/build/
+  INCLUDE += -I./cuttlebone/
 else
 endif
+
+test_network: test_network.cpp
+	$(CC) $(DEFINE) $(INCLUDE) -o $@ $^ $(LINKER)
 
 #click: click.cpp RtAudio.o
 click: click.cpp
