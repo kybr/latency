@@ -11,30 +11,30 @@ using namespace std;
 
 unsigned n = 0;
 
+State state = {0};
 cuttlebone::Maker<State> maker("192.168.7.255");
 
 int processAudio(void *outputBuffer, void *inputBuffer,
                  unsigned int nBufferFrames, double streamTime,
                  RtAudioStreamStatus status, void *userData) {
 
-  // send network packet
-  //
-  if (n == 0) {
-    state.n++;
-    maker.set(state);
-    LOG("sent %u", state.n);
-  }
+  short* buffer = static_cast<short*>(outputBuffer);
+  memset(buffer, 0, sizeof(short) * nBufferFrames);
 
-  // pulse pin
-  //
-  if (n == 0)
-    digitalWrite(0, HIGH);
+  if (n == 0) {
+    maker.set(state); // broadcast packet over the network
+    state.n++;
+    buffer[0] = 32767; // make audio click
+    digitalWrite(0, HIGH); // raise a GPIO pin
+    LOG("sent %u", state.n); // log to the console
+  }
   else
     digitalWrite(0, LOW);
 
   n++;
   if (n == 52)
     n = 0;
+
   return 0;
 }
 

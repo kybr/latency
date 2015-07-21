@@ -9,8 +9,7 @@
 
 using namespace std;
 
-unsigned n = 0;
-
+State state = {0};
 cuttlebone::Taker<State> taker;
 
 int processAudio(void *outputBuffer, void *inputBuffer,
@@ -22,7 +21,7 @@ int processAudio(void *outputBuffer, void *inputBuffer,
 
   if (taker.get(state)) {
     digitalWrite(0, HIGH);
-    printf("got here\n");
+    LOG("got %u", state.n);
     buffer[0] = 32767;
   }
   else {
@@ -35,7 +34,6 @@ int processAudio(void *outputBuffer, void *inputBuffer,
 
 int main() {
   wiringPiSetup();
-
   taker.start();
 
   RtAudio dac;

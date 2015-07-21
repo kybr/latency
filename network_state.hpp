@@ -3,6 +3,6 @@
 
 struct State {
   unsigned n;
-} state = {0};
+};
 
 #endif
