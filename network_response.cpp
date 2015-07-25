@@ -20,14 +20,19 @@ int processAudio(void *outputBuffer, void *inputBuffer,
   memset(buffer, 0, sizeof(short) * nBufferFrames);
 
   if (taker.get(state)) {
-    digitalWrite(0, HIGH);
+    //digitalWrite(0, HIGH);
     LOG("got %u", state.n);
-    buffer[0] = 32767;
+    //buffer[0] = 32767;
+
+    for (int i = 0; i < 10; i++)
+      *buffer++ = 32767;
+    for (int i = 0; i < 10; i++)
+      *buffer++ = -32767;
   }
-  else {
-    digitalWrite(0, LOW);
-    buffer[0] = 0;
-  }
+  //else {
+  //  digitalWrite(0, LOW);
+  //  buffer[0] = 0;
+  //}
 
   return 0;
 }
