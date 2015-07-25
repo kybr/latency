@@ -29,7 +29,7 @@ click: click.cpp
 	$(CC) $(DEFINE) -o $@ $^ $(LINKER)
 
 playsaw: playsaw.cpp
-	$(CC) $(DEFINE) -o $@ $^ $(LINKER)
+	$(CC) $(DEFINE) $(INCLUDE) -o $@ $^ $(LINKER)
 
 #probe: probe.cpp RtAudio.o
 #	$(CC) $(DEFINE) -o $@ $^ $(LINKER)
