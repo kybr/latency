@@ -3,18 +3,21 @@ ifeq ($(OS), Linux)
   CC = g++ -std=c++0x
   LINKER += -lrtaudio
   LINKER += -lasound
-  LINKER += -lwiringPi
+#  LINKER += -lwiringPi
 #  LINKER += -lcuttlebone
 #  LINKER += -L./cuttlebone/build/
   INCLUDE += -I./cuttlebone/
 else ifeq ($(OS), Darwin)
   CC = g++ -std=c++11 -Wno-deprecated-register -Wno-format-extra-args
   DEFINE += -D__MACOSX_CORE__
+  LINKER += -L/usr/local/lib/
+  LINKER += -L./cuttlebone/build/
+  LINKER += -lpthread
+  LINKER += -lrtaudio
   LINKER += -framework CoreAudio
   LINKER += -framework CoreFoundation
-  LINKER += -lpthread
-  LINKER += -L./cuttlebone/build/
   INCLUDE += -I./cuttlebone/
+  INCLUDE += -I/usr/local/include/
 else
 endif
 

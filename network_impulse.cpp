@@ -5,11 +5,8 @@
 #include "RtAudio.h"
 #include <iostream>
 #include <cstdlib>
-#include <wiringPi.h>
 
 using namespace std;
-
-unsigned n = 0;
 
 State state = {0};
 cuttlebone::Maker<State> maker("192.168.7.255");
@@ -17,30 +14,25 @@ cuttlebone::Maker<State> maker("192.168.7.255");
 int processAudio(void *outputBuffer, void *inputBuffer,
                  unsigned int nBufferFrames, double streamTime,
                  RtAudioStreamStatus status, void *userData) {
-
-  short* buffer = static_cast<short*>(outputBuffer);
+  short *buffer = static_cast<short *>(outputBuffer);
   memset(buffer, 0, sizeof(short) * nBufferFrames);
 
+  static unsigned n = 0;
   if (n == 0) {
-    maker.set(state); // broadcast packet over the network
+    maker.set(state);  // broadcast packet over the network
     state.n++;
-    buffer[0] = 32767; // make audio click
-    digitalWrite(0, HIGH); // raise a GPIO pin
-    LOG("sent %u", state.n); // log to the console
+    LOG("sent %u", state.n);  // log to the console
+    for (int i = 0; i < 10; i++) *buffer++ = 32767;
+    for (int i = 0; i < 10; i++) *buffer++ = -32767;
   }
-  else
-    digitalWrite(0, LOW);
 
   n++;
-  if (n == 52)
-    n = 0;
+  if (n == 52) n = 0;
 
   return 0;
 }
 
 int main() {
-  wiringPiSetup();
-
   maker.start();
 
   RtAudio dac;
@@ -53,8 +45,8 @@ int main() {
   parameters.deviceId = dac.getDefaultOutputDevice();
   parameters.nChannels = 1;
   parameters.firstChannel = 0;
-  unsigned int sampleRate = 44100;
-  unsigned int bufferFrames = 512;
+  unsigned int sampleRate = AUDIO_SAMPLE_RATE;
+  unsigned int bufferFrames = AUDIO_BLOCK_SIZE;
   double data[2];
 
   try {
