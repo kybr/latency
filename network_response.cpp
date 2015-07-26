@@ -18,7 +18,7 @@ int processAudio(void *outputBuffer, void *inputBuffer,
   memset(buffer, 0, sizeof(short) * nBufferFrames);
 
   if (taker.get(state)) {
-    LOG("got %u", state.n);
+    //    LOG("got %u", state.n);
     for (int i = 0; i < 10; i++) *buffer++ = 32767;
     for (int i = 0; i < 10; i++) *buffer++ = -32767;
   }

@@ -21,7 +21,7 @@ int processAudio(void *outputBuffer, void *inputBuffer,
   if (n == 0) {
     maker.set(state);  // broadcast packet over the network
     state.n++;
-    LOG("sent %u", state.n);  // log to the console
+    //    LOG("sent %u", state.n);  // log to the console
     for (int i = 0; i < 10; i++) *buffer++ = 32767;
     for (int i = 0; i < 10; i++) *buffer++ = -32767;
   }
